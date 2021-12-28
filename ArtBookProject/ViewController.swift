@@ -28,8 +28,16 @@ class ViewController: UIViewController ,UITableViewDelegate,UITableViewDataSourc
         getData()
         
     }
+    override func viewWillAppear(_ animated: Bool) {
+        //we will reach push notification message here;
+        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: NSNotification.Name("newData"), object: nil)
+    }
     //Core Data Geting Datas
-    func getData(){
+ @objc   func getData(){
+    //clear array values for not dublicating datas;
+    paintingModel.removeAll(keepingCapacity: false)
+    
+    
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         

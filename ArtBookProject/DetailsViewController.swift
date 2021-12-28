@@ -82,6 +82,16 @@ class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UI
         }
 
         
+        // we gonna use push notification for all observer(passing datas between controllers. All app can reach this info)
+        // we wanna use this for saying main screen that we register a new data you can refresh your fetching and reloading tableview
+        NotificationCenter.default.post(name: NSNotification.Name("newData"), object: nil)
+        
+        
+        
+        //after saving data go to back to main screen;
+        self.navigationController?.popViewController(animated: true)
+        
+        
         
     }
 }

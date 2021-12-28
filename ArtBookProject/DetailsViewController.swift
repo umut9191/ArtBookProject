@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
 
@@ -53,6 +54,34 @@ class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UI
         view.endEditing(true)
     }
     @IBAction func saveButtonPressed(_ sender: UIButton) {
+        //here Core Data things;
+        //after we use add core data while creating this project some code otomaticaly came to AppDelegate such context.
+        //we gona reacht that context for crud operations;
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        //for reaching entities;
+        let newPainting = NSEntityDescription.insertNewObject(forEntityName: "Paintings", into: context)
+        
+      
+        //saving data; Attributes
+        newPainting.setValue(nameText.text!, forKey: "name")
+        newPainting.setValue(artistText.text!, forKey: "artist")
+        if let year = Int(yearText.text!){
+            newPainting.setValue(year, forKey: "year")
+        }
+        newPainting.setValue(UUID(), forKey: "id")
+        //image;
+        let data = imageView.image!.jpegData(compressionQuality: 0.5)
+        newPainting.setValue(data, forKey: "image")
+        
+        // saving;
+        do {
+            try context.save()
+        } catch  {
+            print("some error ocur \(error)")
+        }
+
+        
         
     }
 }

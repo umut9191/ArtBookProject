@@ -79,6 +79,44 @@ class ViewController: UIViewController ,UITableViewDelegate,UITableViewDataSourc
             destinationVC.paintingModel = selectedPainting
         }
     }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            // get the data for deleting
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Paintings")
+            fetchRequest.predicate = NSPredicate(format: "id = %@",paintingModel[indexPath.row].id.uuidString)
+            
+            fetchRequest.returnsObjectsAsFaults = false
+            do {
+                let results = try context.fetch(fetchRequest)
+                if results.count>0 {
+                    for item in results as! [NSManagedObject] {
+                        if let id = item.value(forKey: "id") as? UUID {
+                            // to be sure one more checking;
+                            if id == paintingModel[indexPath.row].id {
+                                //now you can delete it
+                                context.delete(item)
+                                
+                                paintingModel.remove(at: indexPath.row)
+                                self.tableView.reloadData()
+                                
+                                do {
+                                    try context.save()
+                                } catch  {
+                                    print("error \(error)")
+                                }
+                             break
+                            }
+                        }
+                    }
+                }
+            } catch  {
+                print("somting bad happened: \(error)")
+            }
+        }
+    }
 
 }
 

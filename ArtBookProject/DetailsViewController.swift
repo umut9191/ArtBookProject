@@ -10,6 +10,7 @@ import CoreData
 
 class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
 
+    @IBOutlet weak var saveButtonOutlet: UIButton!
     @IBOutlet weak var nameText: UITextField!
     @IBOutlet weak var yearText: UITextField!
     @IBOutlet weak var artistText: UITextField!
@@ -20,7 +21,13 @@ class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UI
         super.viewDidLoad()
         
         if let painting = paintingModel {
+            //disable save button ;
+            //saveButtonOutlet.isEnabled = false
+            saveButtonOutlet.isHidden = true
             //if not nil get data via Core Data
+            
+            
+            
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let context = appDelegate.persistentContainer.viewContext
             
@@ -46,6 +53,9 @@ class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UI
             }
             //print("selected painting name: \(painting.name)")
             
+        }else{
+            saveButtonOutlet.isHidden = false
+            saveButtonOutlet.isEnabled = false
         }
         
         
@@ -74,6 +84,7 @@ class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UI
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         //here original image or editing image mostly uses ; we said abowe we gonna edit image yes. thats  just for knowing there is something like that.
         imageView.image = info[.originalImage] as? UIImage
+        saveButtonOutlet.isEnabled = true
         self.dismiss(animated: true, completion: nil)
         
         //Not: we know we can ask user permision for reaching his/her galery;

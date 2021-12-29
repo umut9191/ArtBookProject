@@ -14,9 +14,41 @@ class DetailsViewController: UIViewController,UIImagePickerControllerDelegate,UI
     @IBOutlet weak var yearText: UITextField!
     @IBOutlet weak var artistText: UITextField!
     @IBOutlet weak var imageView: UIImageView!
-    
+    var paintingModel: PaintingModel?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let painting = paintingModel {
+            //if not nil get data via Core Data
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Paintings")
+            let idString = painting.id.uuidString
+            fetchRequest.predicate = NSPredicate(format: "id = %@",idString)
+            //for more performans usage this can be made false;
+            fetchRequest.returnsObjectsAsFaults = false
+            do {
+              let results =  try context.fetch(fetchRequest)
+                for item in results as! [NSManagedObject] {
+                    if let name = item.value(forKey: "name") as? String, let id = item.value(forKey: "id") as? UUID
+                    ,let artist = item.value(forKey: "artist") as? String, let year = item.value(forKey: "year") as? Int, let image = item.value(forKey: "image") as? Data{
+                        nameText.text = name
+                        yearText.text = String(year)
+                        artistText.text = artist
+                        imageView.image = UIImage(data: image)
+                    }
+                }
+               // self.tableView.reloadData()
+            } catch  {
+                print("some error occur \(error)")
+            }
+            //print("selected painting name: \(painting.name)")
+            
+        }
+        
+        
         //closing the keyboard after clicking somewhere else on the screen;
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         view.addGestureRecognizer(gestureRecognizer)

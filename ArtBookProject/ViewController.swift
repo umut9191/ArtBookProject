@@ -13,7 +13,7 @@ class ViewController: UIViewController ,UITableViewDelegate,UITableViewDataSourc
     @IBOutlet weak var tableView: UITableView!
     
     var paintingModel = [PaintingModel]()
-    
+    var selectedPainting:PaintingModel?
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -33,11 +33,10 @@ class ViewController: UIViewController ,UITableViewDelegate,UITableViewDataSourc
         NotificationCenter.default.addObserver(self, selector: #selector(getData), name: NSNotification.Name("newData"), object: nil)
     }
     //Core Data Geting Datas
- @objc   func getData(){
+ @objc func getData(){
     //clear array values for not dublicating datas;
     paintingModel.removeAll(keepingCapacity: false)
-    
-    
+
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         
@@ -58,7 +57,10 @@ class ViewController: UIViewController ,UITableViewDelegate,UITableViewDataSourc
         }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        //selected paintings name;
+        selectedPainting = paintingModel[indexPath.row]
+        performSegue(withIdentifier: "toDetailsVC", sender: nil)
+
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return paintingModel.count
@@ -68,18 +70,13 @@ class ViewController: UIViewController ,UITableViewDelegate,UITableViewDataSourc
         cell.textLabel?.text = paintingModel[indexPath.row].name
         return cell
     }
-    
-    
-    
-    
-    
    @objc func rightBarButtonItem() {
     performSegue(withIdentifier: "toDetailsVC", sender: nil)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toDetailsVC" {
          let  destinationVC = segue.destination as! DetailsViewController
-            //destinationVC
+            destinationVC.paintingModel = selectedPainting
         }
     }
 
